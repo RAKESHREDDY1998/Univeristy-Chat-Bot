@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Message, Role } from './types';
-import { chatWithGemini } from './services/geminiService';
+import { chatWithGemini, getUserFriendlyAiErrorMessage } from './services/geminiService';
 import { ASU_COLORS, QUICK_ACTIONS } from './constants';
 
 export default function App() {
@@ -81,7 +81,7 @@ export default function App() {
       const errorMsg: Message = {
         id: 'error',
         role: 'assistant',
-        content: "Oops! I encountered an error connecting to the Sun Devil Network. Please try again in a moment.",
+        content: getUserFriendlyAiErrorMessage(error),
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, errorMsg]);
@@ -131,6 +131,14 @@ export default function App() {
         content: response.text,
         timestamp: new Date(),
       }]);
+    } catch (error) {
+      const errorMsg: Message = {
+        id: 'error-quick-action',
+        role: 'assistant',
+        content: getUserFriendlyAiErrorMessage(error),
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, errorMsg]);
     } finally {
       setIsTyping(false);
     }
